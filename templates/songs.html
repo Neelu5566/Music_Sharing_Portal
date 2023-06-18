@@ -1,0 +1,70 @@
+{% extends 'base.html' %} 
+
+{% block title %} 
+All Songs 
+{% endblock title %} 
+
+{% block content %}
+<h2>Hello {{ user.email }}</h2>
+<a href="/songs/#portfolio" class="btn-get-started">Hey.Siri...!</a>
+{% endblock content %} 
+
+{% block body %}
+<!-- ======= Portfolio Section ======= -->
+<section id="portfolio" class="portfolio">
+  <div class="container" data-aos="fade-up">
+    <div class="section-header">
+      <h3 class="section-title">Your Songs</h3>
+      <p class="section-description">
+        All Public, Private, and Protected Songs for you
+        <strong>{{ user.email }}</strong>
+      </p>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>User Uploaded</th>
+          <th>Title</th>
+          <th>Track</th>
+          <th>Privacy</th>
+          <th>Protected To/From</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% load custom_tags %}
+        {% for song in songs_data %}
+        <tr>
+          <td>{{ song.user.email }}</td>
+          <td>{{ song.title }}</td>
+          <td>
+            <audio controls>
+              {% if song.audio_file %}
+              <source src="{{ song.audio_file.url }}" type="audio/mpeg" />
+              {% endif %} Your browser does not support the audio element.
+            </audio>
+          </td>
+          <td>{{ song.get_privacy_display }}</td>
+          <td>
+            {% if song.privacy == 'protected' and song.allowed_users.all %}
+              <select>
+                {% for user in song.allowed_users.all %}
+                  <option value="{{ user.email }}">{{ user.email }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- End Portfolio Section -->
+
+{% endblock body %}
+
+
