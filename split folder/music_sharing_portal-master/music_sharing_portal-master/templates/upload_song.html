@@ -1,0 +1,80 @@
+{% extends 'base.html' %} 
+
+{% block title %}
+Upload Song
+{% endblock title %} 
+
+{% block content %}
+<div class="card bg-light p-5">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
+
+  <form method="post" enctype="multipart/form-data" action="{% url 'song_upload' %}">
+  {%csrf_token%}
+  <div class="mb-3">
+    <label for="id_title" class="form-label">Title</label>
+    <input type="text" id="id_title" name="title" class="form-control">
+  </div>
+  
+  <div class="mb-3">
+    <label for="id_artist" class="form-label">Artist</label>
+    <input type="text" id="id_artist" name="artist" class="form-control">
+  </div>
+  
+  <div class="mb-3">
+    <label for="id_audio_file" class="form-label">Audio File</label>
+    <input type="file" id="id_audio_file" name="audio_file" class="form-control">
+  </div>
+  
+  <div class="mb-3">
+    <label for="id_privacy" class="form-label">Privacy</label>
+    <select id="id_privacy" name="privacy" class="form-select">
+      <option value="public">Public</option>
+      <option value="private">Private</option>
+      <option value="protected">Protected</option>
+    </select>
+  </div>
+  
+
+  <div class="mb-3" id="allowed-emails-container" style="display: none;">
+    <label for="allowed_emails" class="form-label">Allowed Users</label>
+    <select id="allowed_emails" name="allowed_emails" class="form-select" multiple>
+      {% for user in users %}
+      <option value="{{ user.email }}">{{ user.email }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  
+  
+  <button type="submit" class="btn btn-primary">Upload Song</button>
+
+</form>
+</div>
+{% endblock content %}
+
+{% block body %}
+<script>
+  function handlePrivacyChange() {
+    const privacySelect = document.getElementById("id_privacy");
+    const allowedEmailsContainer = document.getElementById("allowed-emails-container");
+
+    if (privacySelect.value === "protected") {
+      allowedEmailsContainer.style.display = "block";
+    } else {
+      allowedEmailsContainer.style.display = "none";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    handlePrivacyChange();
+
+    const privacySelect = document.getElementById("id_privacy");
+    privacySelect.addEventListener("change", handlePrivacyChange);
+  });
+</script>
+{% endblock body %}
